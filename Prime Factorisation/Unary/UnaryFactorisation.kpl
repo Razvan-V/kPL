@@ -1,0 +1,48 @@
+{} (Env) - {a} (Root) - {y, p, new, m} (genComp) .
+
+type Root{
+	max{
+		// if solution found, send the result to the Env compartment
+		x-> X (Env).
+		y-> Y (Env) .
+		
+		>x :a -> 2a . // if solution then start dissolving cell
+	}
+	max{
+	
+		=2a : a -> #. //Dissolve the cell - stop all other rules for being executed.
+		m -> .
+	}
+}
+
+type genComp{
+	m -> m, m (Root). // if a solution has been found, then stop the cell to execute any other rules.
+	max{
+		//Check if we have a solution (if p=N), and send the result to the Root compartment.
+		=247p & <new : x -> x (Root) .
+		=247p & <new : y -> y (Root) .	
+	
+		// Stop the recursion if we are in a new compartment that has the product p>N.
+		>247p : new -> # . 
+		
+		//Initialise x=0, yy=0.
+		<247p & =new : x-> .
+		<247p & =new : xx-> .
+	
+		// If we are in a new compartment, compute the following values: p=p+4y,  yy=2y,  x=y. 
+		<247p & =new : y -> 4p, y, 2xx , x .
+		
+		// If we are NOT in a new compartment, compute the following values: p=p+2y,  y=y+2.
+		<247p & <new : xx -> p, xx.
+		<247p : z -> 2y,  z . 
+	}
+	
+	//Finally, we have the recursion step. This will be executed only if:
+	// we are in a new compartment, and p<N.
+	// At this point we also brgin the computation for a new p, x, y as such:
+	// if we are in a new compartment - p=p+4,	y=y+2
+	// if we are NOT in a new compartment - p=p+4,	y=y+2, x=x+2, yy=4.
+//	choice{
+		<247p : new -> [4p, 2y, 2x, 4xx, z][new, 4p, 2y] .
+//	}
+}
